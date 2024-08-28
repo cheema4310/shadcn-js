@@ -14,6 +14,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
+
+import sendEmail from '@/actions/sendEmail';
 
 const formSchema = z.object({
   fullName: z.string().min(3, {
@@ -33,8 +36,15 @@ export default function SubcriptionForm() {
     },
   });
 
-  function onSubmit(values) {
-    console.log(values);
+  async function onSubmit(values) {
+    try {
+      await sendEmail(values);
+      toast.success(`${values.fullName} has subscribed successfully`);
+      form.reset();
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
   }
   const { isSubmitting, isValid } = form.formState;
 
