@@ -3,8 +3,9 @@ export const replaceMongoIdInArray = (array) => {
     .map((item) => {
       return {
         ...item,
-        _id: item._id.toString(),
+        id: item._id.toString(),
       };
     })
     .map(({ _id, ...rest }) => rest);
+  return mappedArray;
 };

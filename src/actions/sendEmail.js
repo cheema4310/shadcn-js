@@ -1,6 +1,11 @@
 'use server';
 
+import EmailTemplate from '@/components/resendEmail/EmailTemplate';
 import Subscribers from '@/models/subs-model';
+import { revalidatePath } from 'next/cache';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function sendEmail(formData) {
   try {
@@ -18,6 +23,16 @@ export default async function sendEmail(formData) {
         email,
         name: fullName,
       });
+      // send the email to subscriber
+      const message = `Dear ${fullName}, Thank you for subscribing to Cheema's Newsletter. Learn more to earn more. Enjoy!`;
+      await resend.emails.send({
+        from: 'noreply <onboarding@resend.dev>',
+        to: email,
+        subject: 'Welcome to Cheema!',
+        react: EmailTemplate({ message }),
+      });
+      // Revalidate the path
+      revalidatePath('/');
     } else {
       throw new Error(`${email} is already subscribed`);
     }
